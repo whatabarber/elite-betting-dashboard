@@ -476,8 +476,8 @@ class AutoPilotBettingUpdater:
         <div class="max-w-6xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-green-400">SHARP PICKS</h1>
-                    <p class="text-gray-400">Pete Prisco Style Analysis | Auto-Updated</p>
+                    <h1 class="text-3xl font-bold text-green-400">WHATABARBER'S PICKS</h1>
+                    <p class="text-gray-400">NFL & CFB Analysis | Auto-Updated</p>
                 </div>
                 <div class="text-right">
                     <p class="text-sm text-gray-400">Week <span class="text-green-400 font-bold">{self.current_week}</span> • Season 2025</p>
