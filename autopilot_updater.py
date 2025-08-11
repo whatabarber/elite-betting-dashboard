@@ -441,16 +441,16 @@ class AutoPilotBettingUpdater:
         print("✅ HTML site updated successfully!")
 
     def generate_html_content(self, nfl_games: List[Dict], cfb_games: List[Dict], parlays: Dict) -> str:
-        """Generate complete HTML content"""
+        """Generate complete HTML content - FIXED VERSION"""
         
-        # Generate content sections
+        # Generate content sections first
         nfl_parlay_html = self.generate_parlay_html(parlays['nfl'], 'NFL', 'yellow')
         cfb_parlay_html = self.generate_parlay_html(parlays['cfb'], 'CFB', 'blue')
         nfl_games_html = self.generate_games_html(nfl_games, 'NFL')
         cfb_games_html = self.generate_games_html(cfb_games, 'CFB')
         
         # Create complete HTML
-        html_content = f'''<!DOCTYPE html>
+        html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -472,7 +472,6 @@ class AutoPilotBettingUpdater:
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white min-h-screen">
-    <!-- Header -->
     <header class="glass-card border-b border-green-500/30 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
@@ -488,7 +487,6 @@ class AutoPilotBettingUpdater:
         </div>
     </header>
 
-    <!-- League Tabs -->
     <div class="max-w-6xl mx-auto px-6 py-6">
         <div class="flex space-x-1 bg-slate-800 p-1 rounded-lg mb-8">
             <button onclick="switchLeague('nfl')" id="nfl-tab" class="flex-1 py-3 px-6 rounded-md font-medium transition-all bg-green-600 text-white">
@@ -499,13 +497,11 @@ class AutoPilotBettingUpdater:
             </button>
         </div>
 
-        <!-- NFL Content -->
         <div id="nfl-content">
             {nfl_parlay_html}
             {nfl_games_html}
         </div>
 
-        <!-- CFB Content -->
         <div id="cfb-content" style="display: none;">
             {cfb_parlay_html}
             {cfb_games_html}
@@ -518,38 +514,44 @@ class AutoPilotBettingUpdater:
         }});
 
         function switchLeague(league) {{
-            document.getElementById('nfl-tab').className = league === 'nfl' 
-                ? "flex-1 py-3 px-6 rounded-md font-medium transition-all bg-green-600 text-white"
-                : "flex-1 py-3 px-6 rounded-md font-medium transition-all text-gray-400 hover:text-white";
-                
-            document.getElementById('cfb-tab').className = league === 'cfb'
-                ? "flex-1 py-3 px-6 rounded-md font-medium transition-all bg-green-600 text-white"
-                : "flex-1 py-3 px-6 rounded-md font-medium transition-all text-gray-400 hover:text-white";
-
-            document.getElementById('nfl-content').style.display = league === 'nfl' ? 'block' : 'none';
-            document.getElementById('cfb-content').style.display = league === 'cfb' ? 'block' : 'none';
+            const nflTab = document.getElementById('nfl-tab');
+            const cfbTab = document.getElementById('cfb-tab');
+            const nflContent = document.getElementById('nfl-content');
+            const cfbContent = document.getElementById('cfb-content');
+            
+            if (league === 'nfl') {{
+                nflTab.className = "flex-1 py-3 px-6 rounded-md font-medium transition-all bg-green-600 text-white";
+                cfbTab.className = "flex-1 py-3 px-6 rounded-md font-medium transition-all text-gray-400 hover:text-white";
+                nflContent.style.display = 'block';
+                cfbContent.style.display = 'none';
+            }} else {{
+                nflTab.className = "flex-1 py-3 px-6 rounded-md font-medium transition-all text-gray-400 hover:text-white";
+                cfbTab.className = "flex-1 py-3 px-6 rounded-md font-medium transition-all bg-green-600 text-white";
+                nflContent.style.display = 'none';
+                cfbContent.style.display = 'block';
+            }}
         }}
     </script>
 </body>
-</html>'''
+</html>"""
         
         return html_content
 
     def generate_parlay_html(self, parlay: Dict, league: str, color: str) -> str:
-        """Generate HTML for parlay section"""
+        """Generate HTML for parlay section - CLEANED UP"""
         if not parlay['games']:
             return f'<div class="glass-card rounded-xl p-6 mb-8"><p class="text-gray-400">No {league} parlay available this week</p></div>'
         
         games_html = ""
         for i, game in enumerate(parlay['games']):
-            games_html += f'''
+            games_html += f"""
             <div class="p-4 bg-{color}-500/10 border border-{color}-500/30 rounded-lg">
                 <h4 class="font-bold text-{color}-400 mb-2">Game {i+1}</h4>
                 <p class="text-white font-medium">{game['matchup']}</p>
                 <p class="text-{color}-300 text-lg font-bold">{game['pick']}</p>
-            </div>'''
+            </div>"""
         
-        return f'''
+        return f"""
         <div class="glass-card rounded-xl p-6 mb-8 border-2 border-{color}-500/40">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-10 h-10 bg-{color}-500 rounded-lg flex items-center justify-center">
@@ -570,15 +572,61 @@ class AutoPilotBettingUpdater:
                 <h3 class="font-bold text-green-400 mb-2">Parlay Reasoning:</h3>
                 <p class="text-gray-300">{parlay['reasoning']}</p>
             </div>
-        </div>'''
+        </div>"""
 
     def generate_games_html(self, games: List[Dict], league: str) -> str:
-        """Generate HTML for games section"""
-        games_html = f'<h2 class="text-2xl font-bold mb-6">{"🏈" if league == "NFL" else "🎓"} {league} Week {self.current_week} Picks</h2>\n'
+        """Generate HTML for games section - CLEANED UP"""
+        games_html = f'<h2 class="text-2xl font-bold mb-6">{"🏈" if league == "NFL" else "🎓"} {league} Week {self.current_week} Picks</h2>'
         
         for game in games:
-            game_html = self.generate_single_game_html(game)
-            games_html += game_html + '\n'
+            info = game['game_info']
+            pick = game['pick']
+            score = game['predicted_score']
+            analysis = game['analysis']
+            
+            games_html += f"""
+            <div class="glass-card rounded-xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold">{info['away_team']} @ {info['home_team']}</h3>
+                        <p class="text-gray-400">{info['time']}</p>
+                        <p class="text-sm text-gray-500">{info['venue']}</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm text-gray-400">Line</p>
+                        <p class="text-lg font-bold">{info['home_team'].split()[-1]} {info['spread']}</p>
+                        <p class="text-sm text-gray-400">O/U {info['total']}</p>
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-green-500/10 border border-green-500/30 rounded-lg mb-4">
+                    <h4 class="font-bold text-green-400 text-lg mb-2">🎯 THE PICK: {pick['team'].split()[-1]} {pick['line']}</h4>
+                    <p class="text-green-300 font-medium mb-2">Predicted Score: {score['away_team'].split()[-1]} {score['away_score']}, {score['home_team'].split()[-1]} {score['home_score']}</p>
+                    <p class="text-sm text-gray-400">Confidence: {pick['confidence']:.0f}%</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-blue-400 mb-2">The Line</h4>
+                        <p class="text-gray-300">{analysis['the_line']}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-blue-400 mb-2">The Matchup</h4>
+                        <p class="text-gray-300">{analysis['the_matchup']}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-blue-400 mb-2">The Angle</h4>
+                        <p class="text-gray-300">{analysis['the_angle']}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-blue-400 mb-2">The Bottom Line</h4>
+                        <p class="text-gray-300">{analysis['the_bottom_line']}</p>
+                    </div>
+                </div>
+            </div>"""
         
         return games_html
 
