@@ -30,7 +30,7 @@ class AutoPilotBettingUpdater:
         self.current_week = self.get_current_week()
         self.bovada_focus = True
         
-        # Analysis templates - FIXED INDENTATION
+        # Analysis templates
         self.analysis_templates = {
             'opening_hooks': [
                 "This line screams trap game to me.",
@@ -39,12 +39,6 @@ class AutoPilotBettingUpdater:
                 "This is the type of spot that separates the pros from the squares.",
                 "The sharps have been all over this number.",
                 "Public money is flowing one way, but I'm going the other.",
-                "Something smells fishy about this line.",
-                "The oddsmakers know something we don't here.",
-                "This feels like a square crusher waiting to happen.",
-                "I've been watching this line move all week.",
-                "The smart money is clearly on one side.",
-                "This is exactly the kind of game that burns casual bettors."
             ],
             'matchup_intros': [
                 "Let's break down what really matters in this matchup.",
@@ -52,13 +46,6 @@ class AutoPilotBettingUpdater:
                 "When you dig into the numbers, the story becomes clear.",
                 "This matchup has several interesting angles.",
                 "The tape tells a different story than the line suggests.",
-                "Looking at the X's and O's, here's what stands out.",
-                "The chess match between these coaches is fascinating.",
-                "Both teams have clear strengths, but one has the edge.",
-                "The trenches will decide this game, plain and simple.",
-                "Special teams could be the difference maker here.",
-                "Weather and field conditions play a huge role.",
-                "This comes down to which team wants it more."
             ],
             'conclusion_phrases': [
                 "Take the points and run.",
@@ -67,31 +54,8 @@ class AutoPilotBettingUpdater:
                 "The value is too good to pass up.",
                 "This is a max play for me.",
                 "Lock it in and don't look back.",
-                "Easy money if you ask me.",
-                "This bet practically picks itself.",
-                "I'm backing up the truck on this one.",
-                "You'd be crazy not to take this line.",
-                "The sharps will be all over this.",
-                "This is why we do the homework."
             ]
         }
-        
-        # League-specific phrases - FIXED INDENTATION
-        self.nfl_specific = [
-            "The NFL is about matchups and this one favors",
-            "Divisional games are always different animals,",
-            "The bye week preparation shows here as",
-            "Prime time games hit different when",
-            "The weather report has me leaning toward"
-        ]
-
-        self.cfb_specific = [
-            "College football is about emotion and momentum,",
-            "The home crowd factor is huge in college as",
-            "Rivalry games throw the records out the window when",
-            "Young players in big moments either step up or fold, and",
-            "The coaching experience gap shows as"
-        ]
 
     def get_current_week(self) -> int:
         """Calculate current NFL week"""
@@ -165,7 +129,7 @@ class AutoPilotBettingUpdater:
             home_team = game_data['home_team']
             commence_time = game_data['commence_time']
             
-            lines = self.extract_bovada_lines(game_data['bookmakers'], game_data)
+            lines = self.extract_bovada_lines(game_data['bookmakers'])
             
             return {
                 'away_team': away_team,
@@ -182,8 +146,8 @@ class AutoPilotBettingUpdater:
             print(f"❌ Failed to process game data: {e}")
             return None
 
-    def extract_bovada_lines(self, bookmakers: List[Dict], game_data: Dict) -> Dict:
-        """Extract betting lines, prioritizing Bovada - FIXED SPREAD LOGIC"""
+    def extract_bovada_lines(self, bookmakers: List[Dict]) -> Dict:
+        """Extract betting lines, prioritizing Bovada"""
         lines = {'spread': 0, 'total': 45, 'away_ml': 100, 'home_ml': -120}
         
         bovada_book = None
@@ -197,11 +161,7 @@ class AutoPilotBettingUpdater:
         if target_book:
             for market in target_book['markets']:
                 if market['key'] == 'spreads':
-                    # FIXED SPREAD DIRECTION LOGIC
-                    if market['outcomes'][0]['name'] == game_data['away_team']:
-                        lines['spread'] = market['outcomes'][1]['point']  # Home spread
-                    else:
-                        lines['spread'] = market['outcomes'][0]['point']  # Home spread
+                    lines['spread'] = market['outcomes'][1]['point']
                 elif market['key'] == 'totals':
                     lines['total'] = market['outcomes'][0]['point']
                 elif market['key'] == 'h2h':
@@ -307,16 +267,10 @@ class AutoPilotBettingUpdater:
         return analysis
 
     def generate_matchup_analysis(self, game: Dict, pick_data: Dict) -> str:
-        """Generate matchup breakdown with league-specific flavor - FIXED"""
+        """Generate matchup breakdown"""
         intro = random.choice(self.analysis_templates['matchup_intros'])
         
-        # ADD LEAGUE-SPECIFIC FLAVOR
-        if game['league'] == 'NFL':
-            league_flavor = random.choice(self.nfl_specific)
-        else:  # CFB
-            league_flavor = random.choice(self.cfb_specific)
-        
-        analysis = f"{intro} {league_flavor} "
+        analysis = f"{intro} "
         
         if pick_data['factors']['matchup_advantage'] > 2:
             analysis += f"{pick_data['team']} has significant advantages on both sides of the ball. "
