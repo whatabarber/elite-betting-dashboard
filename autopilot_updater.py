@@ -728,10 +728,19 @@ class AutoPilotBettingUpdater:
         </div>'''
 
     def format_game_time(self, commence_time: str) -> str:
-        """Format game time for display"""
+        """Format game time for display - FIXED TIMEZONE"""
         try:
-            dt = datetime.fromisoformat(commence_time.replace('Z', '+00:00'))
-            return dt.strftime("%A • %I:%M %p ET")
+            from datetime import timezone, timedelta
+            
+            # Parse UTC time
+            dt_utc = datetime.fromisoformat(commence_time.replace('Z', '+00:00'))
+            
+            # Convert to Eastern Time (UTC-5 for EST, UTC-4 for EDT)
+            # During football season (Sept-Jan), it's mostly EDT (UTC-4)
+            eastern_offset = timedelta(hours=-4)  # EDT
+            dt_eastern = dt_utc + eastern_offset
+            
+            return dt_eastern.strftime("%A • %I:%M %p ET")
         except:
             return "TBD"
 
